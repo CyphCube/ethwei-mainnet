@@ -1,0 +1,13 @@
+syntax = "proto3";
+package ethwei.ethwei.v1;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "ethwei/x/ethwei/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (amino.name) = "ethwei/x/ethwei/Params";
+  option (gogoproto.equal) = true;
+}
