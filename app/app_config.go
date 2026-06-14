@@ -66,10 +66,7 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	_ "github.com/cosmos/cosmos-sdk/x/staking" // import for side-effects
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	icatypes "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/types"
-	ibctransfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
-	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
-	"google.golang.org/protobuf/types/known/durationpb"
+"google.golang.org/protobuf/types/known/durationpb"
 )
 
 var (
@@ -77,12 +74,11 @@ var (
 		{Account: authtypes.FeeCollectorName},
 		{Account: distrtypes.ModuleName},
 		{Account: minttypes.ModuleName, Permissions: []string{authtypes.Minter}},
+		{Account: ethweimoduletypes.ModuleName, Permissions: []string{authtypes.Minter}},
 		{Account: stakingtypes.BondedPoolName, Permissions: []string{authtypes.Burner, stakingtypes.ModuleName}},
 		{Account: stakingtypes.NotBondedPoolName, Permissions: []string{authtypes.Burner, stakingtypes.ModuleName}},
 		{Account: govtypes.ModuleName, Permissions: []string{authtypes.Burner}},
 		{Account: nft.ModuleName},
-		{Account: ibctransfertypes.ModuleName, Permissions: []string{authtypes.Minter, authtypes.Burner}},
-		{Account: icatypes.ModuleName},
 	}
 
 	// blocked account addresses
@@ -121,8 +117,6 @@ var (
 						stakingtypes.ModuleName,
 						authz.ModuleName,
 						epochstypes.ModuleName,
-						// ibc modules
-						ibcexported.ModuleName,
 						// chain modules
 						ethweimoduletypes.ModuleName},
 					EndBlockers: []string{
@@ -161,10 +155,6 @@ var (
 						upgradetypes.ModuleName,
 						circuittypes.ModuleName,
 						epochstypes.ModuleName,
-						// ibc modules
-						ibcexported.ModuleName,
-						ibctransfertypes.ModuleName,
-						icatypes.ModuleName,
 						// chain modules
 						ethweimoduletypes.ModuleName},
 				}),

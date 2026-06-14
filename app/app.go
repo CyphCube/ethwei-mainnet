@@ -40,12 +40,7 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
-	icacontrollerkeeper "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/controller/keeper"
-	icahostkeeper "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/host/keeper"
-	ibctransferkeeper "github.com/cosmos/ibc-go/v10/modules/apps/transfer/keeper"
-	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
-
-	"ethwei/docs"
+"ethwei/docs"
 	ethweimodulekeeper "ethwei/x/ethwei/keeper"
 )
 
@@ -53,7 +48,7 @@ const (
 	// Name is the name of the application.
 	Name = "ethwei"
 	// AccountAddressPrefix is the prefix for accounts addresses.
-	AccountAddressPrefix = "cosmos"
+	AccountAddressPrefix = "ete"
 	// ChainCoinType is the coin type of the chain.
 	ChainCoinType = 118
 )
@@ -91,12 +86,6 @@ type App struct {
 	ConsensusParamsKeeper consensuskeeper.Keeper
 	CircuitBreakerKeeper  circuitkeeper.Keeper
 	ParamsKeeper          paramskeeper.Keeper
-
-	// ibc keepers
-	IBCKeeper           *ibckeeper.Keeper
-	ICAControllerKeeper icacontrollerkeeper.Keeper
-	ICAHostKeeper       icahostkeeper.Keeper
-	TransferKeeper      ibctransferkeeper.Keeper
 
 	// simulation manager
 	sm           *module.SimulationManager
@@ -145,12 +134,6 @@ func New(
 				appOpts, // supply app options
 				logger,  // supply logger
 
-				// Supply with IBC keeper getter for the IBC modules with App Wiring.
-				// The IBC Keeper cannot be passed because it has not been initiated yet.
-				// Passing the getter, the app IBC Keeper will always be accessible.
-				// This needs to be removed after IBC supports App Wiring.
-				app.GetIBCKeeper,
-
 				// here alternative options can be supplied to the DI container.
 				// those options can be used f.e to override the default behavior of some modules.
 				// for instance supplying a custom address codec for not using bech32 addresses.
@@ -192,11 +175,6 @@ func New(
 	// build app
 	app.App = appBuilder.Build(db, traceStore, baseAppOptions...)
 
-	// register legacy modules
-	if err := app.registerIBCModules(appOpts); err != nil {
-		panic(err)
-	}
-
 	/****  Module Options ****/
 
 	// create the simulation manager and define the order of the modules for deterministic simulations
@@ -216,6 +194,15 @@ func New(
 			return nil, err
 		}
 		return app.App.InitChainer(ctx, req)
+	})
+
+	// Wrap the default ante handler with Ethwei governance rules:
+	// validator-only proposals and no NoWithVeto vote option.
+	// Must be set before app.Load().
+	existingAH := app.AnteHandler()
+	decorator := NewValidatorProposalDecorator(app.StakingKeeper)
+	app.SetAnteHandler(func(ctx sdk.Context, tx sdk.Tx, simulate bool) (sdk.Context, error) {
+		return decorator.AnteHandle(ctx, tx, simulate, existingAH)
 	})
 
 	if err := app.Load(loadLatest); err != nil {

@@ -13,7 +13,13 @@ const (
 	// It should be synced with the gov module's name if it is ever changed.
 	// See: https://github.com/cosmos/cosmos-sdk/blob/v0.52.0-beta.2/x/gov/types/keys.go#L9
 	GovModuleName = "gov"
+
+	// Denom is the base denomination of the native token.
+	Denom = "WEI"
 )
 
 // ParamsKey is the prefix to retrieve all Params
 var ParamsKey = collections.NewPrefix("p_ethwei")
+
+// TotalMintedKey tracks cumulative WEI minted by the fixed emission schedule
+var TotalMintedKey = collections.NewPrefix("total_minted")

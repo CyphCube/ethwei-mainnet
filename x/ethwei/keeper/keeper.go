@@ -12,15 +12,15 @@ import (
 )
 
 type Keeper struct {
-	storeService corestore.KVStoreService
-	cdc          codec.Codec
-	addressCodec address.Codec
-	// Address capable of executing a MsgUpdateParams message.
-	// Typically, this should be the x/gov module account.
-	authority []byte
+	storeService   corestore.KVStoreService
+	cdc            codec.Codec
+	addressCodec   address.Codec
+	authority      []byte
+	mintBankKeeper types.MintBankKeeper
 
-	Schema collections.Schema
-	Params collections.Item[types.Params]
+	Schema      collections.Schema
+	Params      collections.Item[types.Params]
+	TotalMinted collections.Item[uint64]
 }
 
 func NewKeeper(
@@ -28,7 +28,7 @@ func NewKeeper(
 	cdc codec.Codec,
 	addressCodec address.Codec,
 	authority []byte,
-
+	mintBankKeeper types.MintBankKeeper,
 ) Keeper {
 	if _, err := addressCodec.BytesToString(authority); err != nil {
 		panic(fmt.Sprintf("invalid authority address %s: %s", authority, err))
@@ -37,12 +37,14 @@ func NewKeeper(
 	sb := collections.NewSchemaBuilder(storeService)
 
 	k := Keeper{
-		storeService: storeService,
-		cdc:          cdc,
-		addressCodec: addressCodec,
-		authority:    authority,
+		storeService:   storeService,
+		cdc:            cdc,
+		addressCodec:   addressCodec,
+		authority:      authority,
+		mintBankKeeper: mintBankKeeper,
 
-		Params: collections.NewItem(sb, types.ParamsKey, "params", codec.CollValue[types.Params](cdc)),
+		Params:      collections.NewItem(sb, types.ParamsKey, "params", codec.CollValue[types.Params](cdc)),
+		TotalMinted: collections.NewItem(sb, types.TotalMintedKey, "total_minted", collections.Uint64Value),
 	}
 
 	schema, err := sb.Build()

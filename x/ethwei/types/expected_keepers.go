@@ -20,6 +20,12 @@ type BankKeeper interface {
 	// Methods imported from bank should be defined here
 }
 
+// MintBankKeeper defines the bank methods needed for fixed block emission.
+type MintBankKeeper interface {
+	MintCoins(ctx context.Context, moduleName string, amounts sdk.Coins) error
+	SendCoinsFromModuleToModule(ctx context.Context, senderModule, recipientModule string, amt sdk.Coins) error
+}
+
 // ParamSubspace defines the expected Subspace interface for parameters.
 type ParamSubspace interface {
 	Get(context.Context, []byte, interface{})

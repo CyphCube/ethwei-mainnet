@@ -1,0 +1,20 @@
+{
+  "messages": [
+    {
+      "@type": "/cosmos.staking.v1beta1.MsgUpdateParams",
+      "authority": "ete10d07y265gmmuvt4z0w9aw880jnsr700jyh47t8",
+      "params": {
+        "bond_denom": "WEI",
+        "historical_entries": 10000,
+        "max_entries": 7,
+        "max_validators": 50,
+        "min_commission_rate": "0.000000000000000000",
+        "unbonding_time": "1209600s"
+      }
+    }
+  ],
+  "deposit": "1000000000000WEI",
+  "title": "Decrease max validators from 100 to 50",
+  "summary": "This proposal decreases the maximum number of active validators from 100 back to 50.",
+  "metadata": ""
+}

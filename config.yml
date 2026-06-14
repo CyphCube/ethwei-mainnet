@@ -1,27 +1,83 @@
 version: 1
+chain:
+  name: ethwei
+  binary: ethweid
+  prefix: ete
 validation: sovereign
-default_denom: stake
-accounts: 
+default_denom: WEI
+accounts:
 - name: alice
   coins:
-  - 20000token
-  - 200000000stake
+  - 4000000000000000WEI
 - name: bob
   coins:
-  - 10000token
-  - 100000000stake
+  - 2000000000000000WEI
+- name: validator2
+  coins:
+  - 500000000000000WEI
+- name: validator3
+  coins:
+  - 500000000000000WEI
 client:
   openapi:
     path: docs/static/openapi.json
 faucet:
   name: bob
   coins:
-  - 5token
-  - 100000stake
+  - 1000000000WEI
 validators:
 - name: alice
-  bonded: 100000000stake
-- name: validator1
-  bonded: 200000000stake
+  bonded: 1000000000000WEI
+  app:
+    minimum-gas-prices: "0.025WEI"
 - name: validator2
-  bonded: 100000000stake
+  bonded: 500000000000WEI
+  app:
+    minimum-gas-prices: "0.025WEI"
+- name: validator3
+  bonded: 500000000000WEI
+  app:
+    minimum-gas-prices: "0.025WEI"
+genesis:
+  app_state:
+    bank:
+      denom_metadata:
+        - base: WEI
+          display: ETE
+          name: Ethwei
+          symbol: ETE
+          denom_units:
+            - denom: WEI
+              exponent: 0
+            - denom: ETE
+              exponent: 6
+    staking:
+      params:
+        bond_denom: WEI
+        max_validators: 50
+        unbonding_time: "1209600s"
+    mint:
+      params:
+        mint_denom: WEI
+        inflation_rate_change: "0.0"
+        inflation_max: "0.0"
+        inflation_min: "0.0"
+        goal_bonded: "0.67"
+        blocks_per_year: "6311520"
+    crisis:
+      constant_fee:
+        denom: WEI
+        amount: "1000000000"
+    distribution:
+      params:
+        community_tax: "0.000000000000000000"
+    gov:
+       params:
+         min_deposit:
+           - denom: WEI
+             amount: "1"
+         expedited_min_deposit:
+           - denom: WEI
+             amount: "2"
+         voting_period: "300s"
+         expedited_voting_period: "60s"

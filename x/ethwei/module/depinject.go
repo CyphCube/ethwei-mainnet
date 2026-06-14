@@ -28,13 +28,13 @@ func init() {
 type ModuleInputs struct {
 	depinject.In
 
-	Config       *types.Module
-	StoreService store.KVStoreService
-	Cdc          codec.Codec
-	AddressCodec address.Codec
-
-	AuthKeeper types.AuthKeeper
-	BankKeeper types.BankKeeper
+	Config         *types.Module
+	StoreService   store.KVStoreService
+	Cdc            codec.Codec
+	AddressCodec   address.Codec
+	AuthKeeper     types.AuthKeeper
+	BankKeeper     types.BankKeeper
+	MintBankKeeper types.MintBankKeeper
 }
 
 type ModuleOutputs struct {
@@ -45,7 +45,6 @@ type ModuleOutputs struct {
 }
 
 func ProvideModule(in ModuleInputs) ModuleOutputs {
-	// default to governance authority if not provided
 	authority := authtypes.NewModuleAddress(types.GovModuleName)
 	if in.Config.Authority != "" {
 		authority = authtypes.NewModuleAddressOrBech32Address(in.Config.Authority)
@@ -55,6 +54,7 @@ func ProvideModule(in ModuleInputs) ModuleOutputs {
 		in.Cdc,
 		in.AddressCodec,
 		authority,
+		in.MintBankKeeper,
 	)
 	m := NewAppModule(in.Cdc, k, in.AuthKeeper, in.BankKeeper)
 
