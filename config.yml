@@ -12,10 +12,10 @@ accounts:
 - name: bob
   coins:
   - 2000000000000000WEI
-- name: validator2
+- name: mike
   coins:
   - 500000000000000WEI
-- name: validator3
+- name: andy
   coins:
   - 500000000000000WEI
 client:
@@ -30,11 +30,11 @@ validators:
   bonded: 1000000000000WEI
   app:
     minimum-gas-prices: "0.025WEI"
-- name: validator2
+- name: mike
   bonded: 500000000000WEI
   app:
     minimum-gas-prices: "0.025WEI"
-- name: validator3
+- name: andy
   bonded: 500000000000WEI
   app:
     minimum-gas-prices: "0.025WEI"
