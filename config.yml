@@ -54,7 +54,7 @@ genesis:
     staking:
       params:
         bond_denom: WEI
-        max_validators: 50
+        max_validators: 100
         unbonding_time: "1209600s"
     mint:
       params:
