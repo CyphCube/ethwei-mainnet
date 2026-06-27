@@ -3,24 +3,19 @@ package app
 import (
 	_ "ethwei/x/ethwei/module"
 	ethweimoduletypes "ethwei/x/ethwei/types"
-	"time"
 
 	runtimev1alpha1 "cosmossdk.io/api/cosmos/app/runtime/v1alpha1"
 	appv1alpha1 "cosmossdk.io/api/cosmos/app/v1alpha1"
 	authmodulev1 "cosmossdk.io/api/cosmos/auth/module/v1"
-	authzmodulev1 "cosmossdk.io/api/cosmos/authz/module/v1"
 	bankmodulev1 "cosmossdk.io/api/cosmos/bank/module/v1"
 	circuitmodulev1 "cosmossdk.io/api/cosmos/circuit/module/v1"
 	consensusmodulev1 "cosmossdk.io/api/cosmos/consensus/module/v1"
 	distrmodulev1 "cosmossdk.io/api/cosmos/distribution/module/v1"
 	epochsmodulev1 "cosmossdk.io/api/cosmos/epochs/module/v1"
 	evidencemodulev1 "cosmossdk.io/api/cosmos/evidence/module/v1"
-	feegrantmodulev1 "cosmossdk.io/api/cosmos/feegrant/module/v1"
 	genutilmodulev1 "cosmossdk.io/api/cosmos/genutil/module/v1"
 	govmodulev1 "cosmossdk.io/api/cosmos/gov/module/v1"
-	groupmodulev1 "cosmossdk.io/api/cosmos/group/module/v1"
 	mintmodulev1 "cosmossdk.io/api/cosmos/mint/module/v1"
-	nftmodulev1 "cosmossdk.io/api/cosmos/nft/module/v1"
 	paramsmodulev1 "cosmossdk.io/api/cosmos/params/module/v1"
 	slashingmodulev1 "cosmossdk.io/api/cosmos/slashing/module/v1"
 	stakingmodulev1 "cosmossdk.io/api/cosmos/staking/module/v1"
@@ -32,20 +27,14 @@ import (
 	circuittypes "cosmossdk.io/x/circuit/types"
 	_ "cosmossdk.io/x/evidence" // import for side-effects
 	evidencetypes "cosmossdk.io/x/evidence/types"
-	"cosmossdk.io/x/feegrant"
-	_ "cosmossdk.io/x/feegrant/module" // import for side-effects
-	"cosmossdk.io/x/nft"
-	_ "cosmossdk.io/x/nft/module" // import for side-effects
-	_ "cosmossdk.io/x/upgrade"    // import for side-effects
+	_ "cosmossdk.io/x/upgrade" // import for side-effects
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	_ "github.com/cosmos/cosmos-sdk/x/auth/tx/config" // import for side-effects
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	_ "github.com/cosmos/cosmos-sdk/x/auth/vesting" // import for side-effects
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
-	"github.com/cosmos/cosmos-sdk/x/authz"
-	_ "github.com/cosmos/cosmos-sdk/x/authz/module" // import for side-effects
-	_ "github.com/cosmos/cosmos-sdk/x/bank"         // import for side-effects
+	_ "github.com/cosmos/cosmos-sdk/x/bank" // import for side-effects
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	_ "github.com/cosmos/cosmos-sdk/x/consensus" // import for side-effects
 	consensustypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
@@ -56,9 +45,7 @@ import (
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	_ "github.com/cosmos/cosmos-sdk/x/gov" // import for side-effects
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/cosmos/cosmos-sdk/x/group"
-	_ "github.com/cosmos/cosmos-sdk/x/group/module" // import for side-effects
-	_ "github.com/cosmos/cosmos-sdk/x/mint"         // import for side-effects
+	_ "github.com/cosmos/cosmos-sdk/x/mint" // import for side-effects
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	_ "github.com/cosmos/cosmos-sdk/x/params" // import for side-effects
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -66,7 +53,6 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	_ "github.com/cosmos/cosmos-sdk/x/staking" // import for side-effects
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-"google.golang.org/protobuf/types/known/durationpb"
 )
 
 var (
@@ -78,7 +64,6 @@ var (
 		{Account: stakingtypes.BondedPoolName, Permissions: []string{authtypes.Burner, stakingtypes.ModuleName}},
 		{Account: stakingtypes.NotBondedPoolName, Permissions: []string{authtypes.Burner, stakingtypes.ModuleName}},
 		{Account: govtypes.ModuleName, Permissions: []string{authtypes.Burner}},
-		{Account: nft.ModuleName},
 	}
 
 	// blocked account addresses
@@ -88,7 +73,6 @@ var (
 		minttypes.ModuleName,
 		stakingtypes.BondedPoolName,
 		stakingtypes.NotBondedPoolName,
-		nft.ModuleName,
 		// We allow the following module accounts to receive funds:
 		// govtypes.ModuleName
 	}
@@ -115,15 +99,12 @@ var (
 						slashingtypes.ModuleName,
 						evidencetypes.ModuleName,
 						stakingtypes.ModuleName,
-						authz.ModuleName,
 						epochstypes.ModuleName,
 						// chain modules
 						ethweimoduletypes.ModuleName},
 					EndBlockers: []string{
 						govtypes.ModuleName,
 						stakingtypes.ModuleName,
-						feegrant.ModuleName,
-						group.ModuleName,
 						// chain modules
 						ethweimoduletypes.ModuleName},
 					// The following is mostly only needed when ModuleName != StoreKey name.
@@ -147,11 +128,7 @@ var (
 						minttypes.ModuleName,
 						genutiltypes.ModuleName,
 						evidencetypes.ModuleName,
-						authz.ModuleName,
-						feegrant.ModuleName,
 						vestingtypes.ModuleName,
-						nft.ModuleName,
-						group.ModuleName,
 						upgradetypes.ModuleName,
 						circuittypes.ModuleName,
 						epochstypes.ModuleName,
@@ -197,10 +174,6 @@ var (
 				Config: appconfig.WrapAny(&genutilmodulev1.Module{}),
 			},
 			{
-				Name:   authz.ModuleName,
-				Config: appconfig.WrapAny(&authzmodulev1.Module{}),
-			},
-			{
 				Name:   upgradetypes.ModuleName,
 				Config: appconfig.WrapAny(&upgrademodulev1.Module{}),
 			},
@@ -215,21 +188,6 @@ var (
 			{
 				Name:   minttypes.ModuleName,
 				Config: appconfig.WrapAny(&mintmodulev1.Module{}),
-			},
-			{
-				Name: group.ModuleName,
-				Config: appconfig.WrapAny(&groupmodulev1.Module{
-					MaxExecutionPeriod: durationpb.New(time.Second * 1209600),
-					MaxMetadataLen:     255,
-				}),
-			},
-			{
-				Name:   nft.ModuleName,
-				Config: appconfig.WrapAny(&nftmodulev1.Module{}),
-			},
-			{
-				Name:   feegrant.ModuleName,
-				Config: appconfig.WrapAny(&feegrantmodulev1.Module{}),
 			},
 			{
 				Name:   govtypes.ModuleName,
